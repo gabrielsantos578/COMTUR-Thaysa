@@ -1,5 +1,5 @@
 # Dockerfile do frontend
-FROM node:17 AS build
+FROM node:18 AS build
 
 # Define o diretório de trabalho
 WORKDIR /app
@@ -16,7 +16,7 @@ ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
 
 # Compila a aplicação para produção
-RUN npm run build  # Compila a aplicação
+RUN npm run build
 
 # Usar uma imagem do Nginx para servir a aplicação
 FROM nginx:alpine

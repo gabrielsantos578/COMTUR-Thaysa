@@ -28,7 +28,7 @@ services:
     container_name: api_container
     restart: always
     ports:
-      - "7256:80" # Mapeia a porta 5000 do contêiner para a porta 7256 da máquina
+      - "7256:80" # Mapeia a porta 80 do contêiner para a porta 7256 da máquina
     depends_on:
       postgres:
         condition: service_healthy # Garante que o postgres esteja pronto antes de iniciar a API
@@ -47,7 +47,7 @@ services:
     container_name: frontend_container
     restart: always
     ports:
-      - "5173:80"
+      - "3000:80"
     depends_on:
       api:
         condition: service_started

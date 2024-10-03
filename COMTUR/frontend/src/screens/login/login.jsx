@@ -1,3 +1,4 @@
+import React from "react";
 import { Eye, EyeSlash, ArrowLeft } from "@phosphor-icons/react";
 import logoComturSF from "../../assets/logoSF.svg";
 import comturBranco from "../../assets/comturBranco.svg";

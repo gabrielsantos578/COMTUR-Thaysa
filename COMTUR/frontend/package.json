@@ -18,11 +18,11 @@
     "jquery": "^3.7.1",
     "pdfreader": "^1.2.14",
     "phosphor-icons": "^1.4.2",
-    "react": "^17.0.2",
+    "react": "^18.3.1",
     "react-awesome-button": "^6.5.1",
-    "react-dom": "^17.0.2",
+    "react-dom": "^18.3.1",
     "react-input-mask": "^2.0.4",
-    "react-loader-spinner": "^5.1.2",
+    "react-loader-spinner": "^6.0.0",
     "react-pro-sidebar": "^1.1.0-alpha.1",
     "react-responsive": "^9.0.0-beta.6",
     "react-router-dom": "^6.21.3",
@@ -33,6 +33,8 @@
     "tailwind-variants": "^0.2.0"
   },
   "devDependencies": {
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^1.0.7",
     "autoprefixer": "^10.4.2",
     "postcss": "^8.4.5",
