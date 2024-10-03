@@ -8,6 +8,7 @@ using COMTUR.Repositorios;
 using COMTUR.Data;
 using System.Text;
 using COMTUR.Models;
+using System;
 
 namespace COMTUR
 {
@@ -22,12 +23,16 @@ namespace COMTUR
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			// Configuração do banco de dados
-			services.AddDbContext<ComturDBContext>(options =>
-				options.UseNpgsql(Configuration.GetConnectionString("DataBase")));
+            // Busca a string de conexão
+            var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+                ?? Configuration.GetConnectionString("DataBase");
 
-			// Configuração do Swagger
-			services.AddSwaggerGen(c =>
+            // Configurando o DbContext com a string de conexão
+            services.AddDbContext<ComturDBContext>(options =>
+                options.UseNpgsql(connectionString));
+
+            // Configuração do Swagger
+            services.AddSwaggerGen(c =>
 			{
 				c.SwaggerDoc("v1", new OpenApiInfo { Title = "COMTUR", Version = "v1" });
 
@@ -117,8 +122,6 @@ namespace COMTUR
 			services.AddScoped<ITipoTurismoRepositorio, TipoTurismoRepositorio>();
 			// Dependência: Usuario
 			services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
-			// Dependência: ImagemEmpresa
-			services.AddScoped<IImagemEmpresaRepositorio, ImagemEmpresaRepositorio>();
 			// Dependência: ImagemTurismo
 			services.AddScoped<IImagemTurismoRepositorio, ImagemTurismoRepositorio>();
 			// Dependência: Sessão
@@ -127,50 +130,54 @@ namespace COMTUR
 			services.AddScoped<ITurismoRepositorio, TurismoRepositorio>();
 			// Dependência: Avaliacao
 			services.AddScoped<IAvaliacaoRepositorio, AvaliacaoRepositorio>();
-		}
+            // Dependência: AvaliacaoAtracao
+            services.AddScoped<IAvaliacaoAtracaoRepositorio, AvaliacaoAtracaoRepositorio>();
+            // Dependência: AvaliacaoTurismo
+            services.AddScoped<IAvaliacaoTurismoRepositorio, AvaliacaoTurismoRepositorio>();
+            // Dependência: Membro
+            services.AddScoped<IMembroRepositorio, MembroRepositorio>();
+            // Dependência: Parametro
+            services.AddScoped<IParametroRepositorio,ParametroRepositorio>();
+        }
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-		{
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-				app.UseSwagger();
-				app.UseSwaggerUI(c =>
-				{
-					c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sua API V1");
-					// Adicione essas linhas para habilitar o botão "Authorize"
-					c.DocExpansion(DocExpansion.None);
-					c.DisplayRequestDuration();
-					c.EnableDeepLinking();
-					c.EnableFilter();
-					c.ShowExtensions();
-					c.EnableValidator();
-					c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Delete);
-					c.OAuthClientId("swagger-ui");
-					c.OAuthAppName("Swagger UI");
-				});
-			}
-			else
-			{
-				app.UseExceptionHandler("/Home/Error");
-				app.UseHsts();
-			}
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sua API V1");
+                    c.DocExpansion(DocExpansion.None);
+                    c.DisplayRequestDuration();
+                    c.EnableDeepLinking();
+                    c.EnableFilter();
+                    c.ShowExtensions();
+                    c.EnableValidator();
+                    c.SupportedSubmitMethods(SubmitMethod.Get, SubmitMethod.Post, SubmitMethod.Put, SubmitMethod.Delete);
+                    c.OAuthClientId("swagger-ui");
+                    c.OAuthAppName("Swagger UI");
+                });
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
 
-			app.UseHttpsRedirection();
-			app.UseStaticFiles();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseCors("MyPolicy");
 
-			app.UseRouting();
-
-			app.UseAuthentication();
-			app.UseAuthorization();
-
-			app.UseCors("MyPolicy");
-
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllers();
-			});
-		}
-	}
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
+    }
 }
 

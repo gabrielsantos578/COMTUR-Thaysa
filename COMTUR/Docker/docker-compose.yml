@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: ComturDB
+    ports:
+      - "5432:5432" # Porta exposta para o banco de dados
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Volume persistente para dados do PostgreSQL
+      - ../Database/ComturDB.sql:/docker-entrypoint-initdb.d/ComturDB.sql # Carrega o banco de dados inicial
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    build:
+      context: ../COMTUR # Diretório onde está seu Dockerfile da API
+    container_name: api_container
+    restart: always
+    ports:
+      - "7256:80" # Mapeia a porta 5000 do contêiner para a porta 7256 da máquina
+    depends_on:
+      postgres:
+        condition: service_healthy # Garante que o postgres esteja pronto antes de iniciar a API
+    environment:
+      DATABASE_URL: "Host=postgres_container;Port=5432;Database=ComturDB;Username=postgres;Password=123456;"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  frontend:
+    build:
+      context: ../frontend
+      args:
+        VITE_API_URL: http://localhost:7256/api/ # Passa a variável de ambiente no build
+    container_name: frontend_container
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      api:
+        condition: service_started
+    volumes:
+      - ../frontend:/app
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+    driver: local # Volume local para persistência dos dados

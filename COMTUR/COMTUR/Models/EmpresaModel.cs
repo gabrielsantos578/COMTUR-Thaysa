@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace COMTUR.Models
 {
-	[Table("empresa")]
+    [Table("empresa")]
 	public class EmpresaModel
 	{
 		[Key]
@@ -24,9 +24,6 @@ namespace COMTUR.Models
 		[Column("endereco")]
 		public string Endereco { get; set; }
 
-		[Column("descricao")]
-		public string Descricao { get; set; }
-
 		// Relacionamento com tipoTurismo e Empresa
 		[JsonIgnore]
 		public TipoTurismoModel? TipoTurismoModel { get; set; }
@@ -35,28 +32,27 @@ namespace COMTUR.Models
 		[ForeignKey("tipoturismoid")]
 		public int IdTipoTurismo { get; set; }
 
-		// Mapear o campo tipoStatus como enum
-		/*[Column("tipostatus")]
-		[EnumDataType(typeof(TipoStatus))]
-		public TipoStatus TipoStatus { get; set; }*/
-
-		// relação com empresario
-		[JsonIgnore]
+        // relação com Empresario
+        [JsonIgnore]
         public UsuarioModel? UsuarioModel { get; set; }
 
 		[Column("usuarioid")]
 		[ForeignKey("usuarioid")]
 		public int IdUsuario { get; set; }
 
-		// relação com ImagemEmpresa
-		public ICollection<ImagemEmpresaModel>? ImagemEmpresa { get; set; }
+		[Column("statusatracao")]
+		public TipoStatus Status { get; set; }
+
+		public void Approved() => Status = StatusEnumExtensions.Approved();
+		public void Inactive() => Status = StatusEnumExtensions.Inactive();
+		public void Disapproved() => Status = StatusEnumExtensions.Disapproved();
+		public void Analyzing() => Status = StatusEnumExtensions.Analyzing();
+
+		public string GetState() => IStatusStateExtensions.GetState(this.Status);
+		public bool CanInactive() => IStatusStateExtensions.CanInactive(this.Status);
+		public bool CanAnalyzing() => IStatusStateExtensions.CanAnalyzing(this.Status);
+		public bool CanApproved() => IStatusStateExtensions.CanApproved(this.Status);
+		public bool CanDisapproved() => IStatusStateExtensions.CanDisapproved(this.Status);
 
 	}
 }
-
-
-
-
-
-
-
